@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Documents.Api", "Documents.Api\Documents.Api.csproj", "{C0D1D3DA-5DBC-45B2-A478-27E3DEB01138}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Documents.Service", "Documents.Service\Documents.Service.csproj", "{CA3EE620-D4C9-471E-AE58-048BF6FACF01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{C0D1D3DA-5DBC-45B2-A478-27E3DEB01138}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0D1D3DA-5DBC-45B2-A478-27E3DEB01138}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0D1D3DA-5DBC-45B2-A478-27E3DEB01138}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA3EE620-D4C9-471E-AE58-048BF6FACF01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA3EE620-D4C9-471E-AE58-048BF6FACF01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA3EE620-D4C9-471E-AE58-048BF6FACF01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA3EE620-D4C9-471E-AE58-048BF6FACF01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

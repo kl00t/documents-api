@@ -1,5 +1,5 @@
 ﻿using Documents.Api.Dto;
-using Documents.Api.Services;
+using Documents.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Documents.Api.Controllers;
@@ -23,17 +23,11 @@ public class DocumentsController : ControllerBase
         [FromRoute] string customerId,
         [FromQuery] string documentType = null)
     {
-        return Ok();
-        //var documents = await _documentService.GetDocumentsByCustomerIdAsync(customerId, documentType);
-        //if (documents == null || documents.Count == 0)
-        //{
-        //    return NotFound(new
-        //    {
-        //        message = $"No documents found for customer ID {customerId}" +
-        //    (documentType != null ? $" and document type {documentType}" : "")
-        //    });
-        //}
-        //return Ok(documents);
+        var documents = await _documentService.GetDocumentsByCustomerIdAsync(customerId, documentType);
+
+        return documents is null || documents.Count == 0
+            ? Problem(statusCode: StatusCodes.Status404NotFound, detail: $"Documents not found {customerId}.")
+            : Ok(DocumentResponse.FromDomain(documents));
     }
 
     // GET /customers/{customerId}/orders/{orderCode}/documents?documentType=image/png
@@ -43,40 +37,27 @@ public class DocumentsController : ControllerBase
         [FromRoute] string orderCode,
         [FromQuery] string documentType = null)
     {
-        return Ok();
-        //var documents = await _documentService.GetDocumentsByCustomerAndOrderAsync(customerId, orderCode, documentType);
-        //if (documents == null || documents.Count == 0)
-        //{
-        //    return NotFound(new
-        //    {
-        //        message = $"No documents found for customer ID {customerId}, order code {orderCode}" +
-        //    (documentType != null ? $", and document type {documentType}" : "")
-        //    });
-        //}
-        //return Ok(documents);
+        var documents = await _documentService.GetDocumentsByCustomerAndOrderAsync(customerId, orderCode, documentType);
+
+        return documents is null || documents.Count == 0
+            ? Problem(statusCode: StatusCodes.Status404NotFound, detail: $"Documents not found {customerId} and {orderCode}.")
+            : Ok(DocumentResponse.FromDomain(documents));
     }
 
     // POST /customers/{customerId}/documents
     [HttpPost]
     public async Task<IActionResult> StoreDocumentForCustomer(
         [FromRoute] string customerId,
-        [FromBody] DocumentDto documentDto)
+        [FromBody] StoreDocumentRequest request)
     {
-        return Ok();
-        //if (customerId != documentDto.CustomerId)
-        //{
-        //    return BadRequest(new { message = "Customer ID mismatch." });
-        //}
+        var document = request.ToDomain();
 
-        //var newDocument = await _documentService.StoreDocumentAsync(documentDto);
-        //if (newDocument == null)
-        //{
-        //    return BadRequest(new { message = "Invalid document data." });
-        //}
+        await _documentService.StoreDocumentAsync(document);
 
-        //return CreatedAtAction(nameof(GetDocumentsByCustomerId),
-        //    new { customerId = newDocument.CustomerId },
-        //    newDocument);
+        return CreatedAtAction(
+            nameof(GetDocumentsByCustomerId), 
+            new { document.FileName  }, 
+            value: DocumentResponse.FromDomain(document));
     }
 
     // POST /customers/{customerId}/orders/{orderCode}/documents
@@ -84,23 +65,16 @@ public class DocumentsController : ControllerBase
     public async Task<IActionResult> StoreDocumentForOrder(
         [FromRoute] string customerId,
         [FromRoute] string orderCode,
-        [FromBody] DocumentDto documentDto)
+        [FromBody] StoreDocumentRequest request)
     {
-        return Ok();
-        //if (customerId != documentDto.CustomerId || orderCode != documentDto.OrderCode)
-        //{
-        //    return BadRequest(new { message = "Customer ID or Order Code mismatch." });
-        //}
+        var document = request.ToDomain();
 
-        //var newDocument = await _documentService.StoreDocumentAsync(documentDto);
-        //if (newDocument == null)
-        //{
-        //    return BadRequest(new { message = "Invalid document data." });
-        //}
+        await _documentService.StoreDocumentAsync(document);
 
-        //return CreatedAtAction(nameof(GetDocumentsByCustomerIdAndOrderCode),
-        //    new { customerId = newDocument.CustomerId, orderCode = newDocument.OrderCode },
-        //    newDocument);
+        return CreatedAtAction(
+            nameof(GetDocumentsByCustomerId),
+            new { document.FileName },
+            value: DocumentResponse.FromDomain(document));
     }
 
 }
