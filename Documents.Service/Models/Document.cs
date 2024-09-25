@@ -4,6 +4,8 @@ public class Document
 {
     public string FileName { get; set; }
 
+    public string Key { get; set; }
+
     public string ContentType { get; set; }
 
     public string ContentBody { get; set; }
