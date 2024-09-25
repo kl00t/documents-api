@@ -1,6 +1,10 @@
-﻿using Documents.Api.Dto;
+﻿using Amazon.S3;
+using Amazon.S3.Model;
+using Documents.Api.Dto;
+using Documents.Api.Settings;
 using Documents.Service;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Documents.Api.Controllers;
 
@@ -11,7 +15,9 @@ public class DocumentsController : ControllerBase
     private readonly ILogger<DocumentsController> _logger;
     private readonly IDocumentService _documentService;
 
-    public DocumentsController(ILogger<DocumentsController> logger, IDocumentService documentService)
+    public DocumentsController(
+        ILogger<DocumentsController> logger, 
+        IDocumentService documentService)
     {
         _logger = logger;
         _documentService = documentService;
