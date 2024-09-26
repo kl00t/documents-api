@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Documents.Api", "Documents.Api\Documents.Api.csproj", "{C0D1D3DA-5DBC-45B2-A478-27E3DEB01138}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Documents.Api", "Documents.Api\Documents.Api.csproj", "{C0D1D3DA-5DBC-45B2-A478-27E3DEB01138}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Documents.Service", "Documents.Service\Documents.Service.csproj", "{CA3EE620-D4C9-471E-AE58-048BF6FACF01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Documents.Service", "Documents.Service\Documents.Service.csproj", "{CA3EE620-D4C9-471E-AE58-048BF6FACF01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Documents.Client", "Documents.Client\Documents.Client.csproj", "{220EC840-80E1-413F-8847-75AA5224419B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{CA3EE620-D4C9-471E-AE58-048BF6FACF01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA3EE620-D4C9-471E-AE58-048BF6FACF01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA3EE620-D4C9-471E-AE58-048BF6FACF01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{220EC840-80E1-413F-8847-75AA5224419B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{220EC840-80E1-413F-8847-75AA5224419B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{220EC840-80E1-413F-8847-75AA5224419B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{220EC840-80E1-413F-8847-75AA5224419B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

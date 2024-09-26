@@ -1,10 +1,8 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
-using Amazon.S3.Model.Internal.MarshallTransformations;
 using Documents.Api.Settings;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System.Text;
 
 namespace Documents.Api.Controllers;
 

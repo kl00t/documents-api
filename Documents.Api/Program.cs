@@ -37,6 +37,8 @@ public class Program
                 s3Settings.SecretKey), clientConfiguration);
         });
 
+
+
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
