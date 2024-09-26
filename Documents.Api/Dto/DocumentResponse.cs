@@ -6,7 +6,7 @@ public record DocumentResponse(string FileName)
 {
     public static DocumentResponse FromDomain(Document document)
     {
-        return new DocumentResponse(document.FileName);
+        return new DocumentResponse(document.FileName!);
     }
 
     public static IEnumerable<DocumentResponse> FromDomain(IEnumerable<Document> documents)

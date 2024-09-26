@@ -2,17 +2,15 @@
 
 public class Document
 {
-    public string FileName { get; set; }
+    public required string CustomerId { get; set; }
 
-    public string Key { get; set; }
+    public required string DocumentId { get; set; }
 
-    public string ContentType { get; set; }
+    public string? FileName { get; set; }
 
-    public string ContentBody { get; set; }
+    public string? ContentType { get; set; }
 
-    public string CustomerId { get; set; }
+    public string? DocumentType { get; set; }
 
-    public string OrderCode { get; set; }
-
-    public DateTime CreatedAt { get; set; }
+    public string? Url { get; set; }
 }
