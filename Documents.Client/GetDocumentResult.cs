@@ -1,15 +1,14 @@
 ﻿namespace Documents.Client;
 
-public class GetDocumentResult
+public class GetDocumentResult(string fileName, string documentType, string key, string contentType, string customerId)
 {
-    public GetDocumentResult(Stream responseStream, string contentType, string fileName)
-    {
-        ResponseStream = responseStream;
-        ContentType = contentType;
-        FileName = fileName;
-    }
+    public string FileName { get; private set; } = fileName;
 
-    public Stream ResponseStream { get; private set; }
-    public string ContentType { get; private set; }
-    public string FileName { get; private set; }
+    public string DocumentType { get; private set; } = documentType;
+
+    public string DocumentId { get; private set; } = key;
+
+    public string ContentType { get; private set; } = contentType;
+
+    public string CustomerId { get; private set; } = customerId;
 }

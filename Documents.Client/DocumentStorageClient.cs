@@ -1,15 +1,21 @@
-﻿using Amazon.S3;
+﻿using Amazon.Runtime.Documents;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Documents.Client.Constants;
 using Documents.Client.Settings;
 using Documents.Core.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.IO;
 using System.Net;
+using System.Net.Mime;
+using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
 
 namespace Documents.Client;
 
-public class DocumentStorageClient(ILogger<DocumentStorageClient> logger, IAmazonS3 s3Client, IOptions<S3Settings> s3Settings) : IDocumentStorageClient
+public class DocumentStorageClient(ILogger<DocumentStorageClient> logger, 
+    IAmazonS3 s3Client, IOptions<S3Settings> s3Settings) : IDocumentStorageClient
 {
     private readonly ILogger<DocumentStorageClient> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IAmazonS3 _s3Client = s3Client ?? throw new ArgumentNullException(nameof(s3Client));
@@ -45,7 +51,7 @@ public class DocumentStorageClient(ILogger<DocumentStorageClient> logger, IAmazo
 
     public async Task<OperationResult<MetadataCollection>> GetObjectMetaData(string key)
     {
-        try
+        return await ExecuteWithLoggingAsync(async () =>
         {
             var request = new GetObjectMetadataRequest
             {
@@ -57,12 +63,8 @@ public class DocumentStorageClient(ILogger<DocumentStorageClient> logger, IAmazo
             return response.HttpStatusCode == HttpStatusCode.OK
                 ? OperationResult<MetadataCollection>.Success(response.Metadata)
                 : OperationResult<MetadataCollection>.Failure($"Failed to get metadata for key: {key}", response.HttpStatusCode);
-        }
-        catch (AmazonS3Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while fetching metadata for key {Key}", key);
-            return OperationResult<MetadataCollection>.Failure($"Failed to get metadata for key: {key}.", HttpStatusCode.NotFound);
-        }
+
+        }, key);
     }
 
     public async Task<OperationResult<string>> GetPreSignedUrlAsync(string key)
@@ -109,21 +111,54 @@ public class DocumentStorageClient(ILogger<DocumentStorageClient> logger, IAmazo
         }, key);
     }
 
-    public async Task<OperationResult<GetDocumentResult>> GetObjectAsync(string key)
+    public async Task<OperationResult<List<GetDocumentResult>>> GetObjectsAsync(string prefix, string? documentType = null)
     {
         return await ExecuteWithLoggingAsync(async () =>
         {
-            var getObjectRequest = new GetObjectRequest
+            var s3Objects = await ListObjectsAsync(prefix);
+            var getDocumentResults = new List<GetDocumentResult>();
+            foreach (var s3Object in s3Objects)
+            {
+                var metadataCollection = await GetObjectMetaData(s3Object.Key);
+
+                var objectDocumentType = GetMetadataValue(metadataCollection.Data, MetadataConstants.DocumentType);
+
+                if (documentType == null || objectDocumentType == documentType)
+                {
+                    getDocumentResults.Add(
+                        new GetDocumentResult(
+                            customerId: prefix,
+                            fileName: GetMetadataValue(metadataCollection.Data, MetadataConstants.FileName),
+                            documentType: GetMetadataValue(metadataCollection.Data, MetadataConstants.DocumentType),
+                            contentType: GetMetadataValue(metadataCollection.Data, MetadataConstants.ContentType),
+                            key: s3Object.Key)
+                    );
+                }
+            }
+
+            return OperationResult<List<GetDocumentResult>>.Success(getDocumentResults);
+
+        }, prefix);
+    }
+
+    private async Task<List<S3Object>> ListObjectsAsync(string prefix)
+    {
+        return await ExecuteWithLoggingAsync(async () =>
+        {
+            var request = new ListObjectsV2Request
             {
                 BucketName = _s3Settings.BucketName,
-                Key = key
+                Prefix = prefix
             };
 
-            var response = await _s3Client.GetObjectAsync(getObjectRequest);
-            return response.HttpStatusCode == HttpStatusCode.OK
-                ? OperationResult<GetDocumentResult>.Success(new GetDocumentResult(response.ResponseStream, response.Headers.ContentType, response.Metadata[MetadataConstants.FileName]))
-                : OperationResult<GetDocumentResult>.Failure($"Failed to get object for key: {key}", response.HttpStatusCode);
-        }, key);
+            var response = await _s3Client.ListObjectsV2Async(request);
+            if (response.HttpStatusCode == HttpStatusCode.OK)
+            {
+                return response.S3Objects;
+            }
+
+            return [];
+        }, prefix);
     }
 
     private async Task<T> ExecuteWithLoggingAsync<T>(Func<Task<T>> func, string key)

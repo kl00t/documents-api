@@ -21,7 +21,18 @@ public class DocumentsController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAllDocumentForCustomer([FromRoute] GetAllDocumentsRequest request, [FromQuery] string? documentType = null)
     {
-        throw new NotImplementedException();
+        var document = request.ToDomain();
+        document.DocumentType = documentType;
+
+        var result = await _documentService.GetAllDocumentsAsync(document);
+
+        if (!result.IsSuccess)
+        {
+            _logger.LogWarning("Documents for customer {customerId} not found.", request.CustomerId);
+            return Problem(statusCode: StatusCodes.Status404NotFound, detail: $"Documents for customer not found {request.CustomerId}.");
+        }
+
+        return Ok(result.Data);
     }
 
     // GET /customer/{CustomerId}/documents/{DocumentId}

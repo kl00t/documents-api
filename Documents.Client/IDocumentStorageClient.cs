@@ -4,8 +4,6 @@ namespace Documents.Client;
 
 public interface IDocumentStorageClient
 {
-    Task<OperationResult<GetDocumentResult>> GetObjectAsync(string key);
-
     Task<OperationResult<string>> GetPreSignedUrlAsync(string key);
 
     Task<OperationResult<MetadataCollection>> GetObjectMetaData(string key);
@@ -15,4 +13,6 @@ public interface IDocumentStorageClient
     Task<OperationResult<bool>> DeleteObjectAsync(string key);
 
     string GetMetadataValue(MetadataCollection metadataCollection, string metadataTag);
+
+    Task<OperationResult<List<GetDocumentResult>>> GetObjectsAsync(string prefix, string? documentType = null);
 }

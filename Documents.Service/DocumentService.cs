@@ -2,6 +2,7 @@
 using Documents.Client.Constants;
 using Documents.Service.Models;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace Documents.Service;
 
@@ -28,6 +29,39 @@ public class DocumentService(ILogger<DocumentService> logger, IDocumentStorageCl
         {
             logger.LogError(ex, "Failed to delete document {DocumentId} for customer {CustomerId}.", document.DocumentId, document.CustomerId);
             return Result<bool>.Failure($"Failed to delete document {document.DocumentId} for customer {document.CustomerId}.");
+        }
+    }
+
+    public async Task<Result<List<Document>>> GetAllDocumentsAsync(Document document)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+
+        try
+        {
+            var response = await documentStorageClient.GetObjectsAsync(document.CustomerId, document.DocumentType);
+            if (!response.IsSuccess)
+            {
+                logger.LogError("Failed to get objects for customer {CustomerId}.", document.CustomerId);
+                return Result<List<Document>>.Failure($"Failed to get objects for customer {document.CustomerId}.");
+            }
+
+            var documents = (from d in response.Data
+                             let ddd = new Document
+                             {
+                                 CustomerId = d.CustomerId,
+                                 DocumentId = d.DocumentId,
+                                 FileName = d.FileName,
+                                 DocumentType = d.DocumentType,
+                                 ContentType = d.ContentType
+                             }
+                             select ddd).ToList();
+
+            return Result<List<Document>>.Success(documents);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get documents  for customer {CustomerId}.", document.CustomerId);
+            return Result<List<Document>>.Failure($"Failed to get documents for customer {document.CustomerId}.");
         }
     }
 
