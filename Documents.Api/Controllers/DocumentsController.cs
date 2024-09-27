@@ -1,7 +1,5 @@
 ﻿using Documents.Api.Dto;
-using Documents.Core.Exceptions;
 using Documents.Service;
-using Documents.Service.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Documents.Api.Controllers;
@@ -23,22 +21,7 @@ public class DocumentsController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAllDocumentForCustomer([FromRoute] GetAllDocumentsRequest request, [FromQuery] string? documentType = null)
     {
-        try
-        {
-            throw new NotImplementedException();
-        }
-        catch (S3ClientException ex)
-        {
-            return Problem(statusCode: StatusCodes.Status500InternalServerError, detail: ex.Message);
-        }
-        catch (ServiceException)
-        {
-            return Problem(statusCode: StatusCodes.Status500InternalServerError, detail: "Service-level error.");
-        }
-        catch (Exception)
-        {
-            return Problem(statusCode: StatusCodes.Status500InternalServerError, detail: "An unexpected error occurred.");
-        }
+        throw new NotImplementedException();
     }
 
     // GET /customer/{CustomerId}/documents/{DocumentId}

@@ -19,7 +19,10 @@ public class Program
         builder.Host.UseSerilog();
 
         // Configure Services
-        builder.Services.AddControllers();
+        builder.Services.AddControllers(options =>
+        {
+            options.Filters.Add<CustomExceptionFilter>();
+        });
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddCors();
