@@ -1,5 +1,7 @@
 ﻿using Documents.Api.Dto;
+using Documents.Core.Exceptions;
 using Documents.Service;
+using Documents.Service.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Documents.Api.Controllers;
@@ -19,9 +21,24 @@ public class DocumentsController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAllDocumentForCustomer([FromRoute] GetDocumentRequest request, [FromQuery] string? documentType = null)
+    public async Task<IActionResult> GetAllDocumentForCustomer([FromRoute] GetAllDocumentsRequest request, [FromQuery] string? documentType = null)
     {
-        throw new NotImplementedException();
+        try
+        {
+            throw new NotImplementedException();
+        }
+        catch (S3ClientException ex)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, detail: ex.Message);
+        }
+        catch (ServiceException)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, detail: "Service-level error.");
+        }
+        catch (Exception)
+        {
+            return Problem(statusCode: StatusCodes.Status500InternalServerError, detail: "An unexpected error occurred.");
+        }
     }
 
     // GET /customer/{CustomerId}/documents/{DocumentId}
@@ -64,11 +81,11 @@ public class DocumentsController(
         if (!result.IsSuccess)
         {
             _logger.LogError("Failed to store document for customer {CustomerId}", request.CustomerId);
-            return BadRequest($"Failed to store document for customer {request.CustomerId}.");
+            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Failed to store document for customer {request.CustomerId}.");
         }
 
         return CreatedAtAction(
-            nameof(GetDocumentById),
+            nameof(GetDocumentUrlById),
             new { result.Data!.CustomerId, result.Data!.DocumentId },
             value: document);
     }
@@ -88,7 +105,7 @@ public class DocumentsController(
         if (!result.IsSuccess)
         {
             _logger.LogError("Failed to delete document {documentId} for customer {customerId}", request.DocumentId, request.CustomerId);
-            return BadRequest($"Failed to delete document {request.DocumentId} for customer {request.CustomerId}.");
+            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Failed to delete document {request.DocumentId} for customer {request.CustomerId}.");
         }
 
         return Ok($"Document '{request.DocumentId}' for customer '{request.CustomerId}' deleted.");

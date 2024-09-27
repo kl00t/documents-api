@@ -2,6 +2,7 @@
 using Amazon.S3.Model;
 using Documents.Client.Constants;
 using Documents.Client.Settings;
+using Documents.Core.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net;
@@ -134,12 +135,12 @@ public class DocumentStorageClient(ILogger<DocumentStorageClient> logger, IAmazo
         catch (AmazonS3Exception ex)
         {
             _logger.LogError(ex, "Amazon S3 error occurred for key: {Key}. Error message: {Message}", key, ex.Message);
-            throw;
+            throw new S3ClientException("Amazon S3 error occurred. Error message: {Message}", ex);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred for key: {Key}. Error message: {Message}", key, ex.Message);
-            throw;
+            throw new S3ClientException("Amazon S3 error occurred. Error message: {Message}", ex);
         }
     }
 }

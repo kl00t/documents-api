@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Documents.Client\Documents.Client.csproj" />
+    <ProjectReference Include="..\Documents.Core\Documents.Core.csproj" />
     <ProjectReference Include="..\Documents.Service\Documents.Service.csproj" />
   </ItemGroup>
 

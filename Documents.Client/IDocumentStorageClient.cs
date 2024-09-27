@@ -1,5 +1,4 @@
 ﻿using Amazon.S3.Model;
-using System.Net;
 
 namespace Documents.Client;
 

@@ -1,6 +1,4 @@
-﻿using System.Net.Mime;
-
-namespace Documents.Client;
+﻿namespace Documents.Client;
 
 public class GetDocumentResult
 {
