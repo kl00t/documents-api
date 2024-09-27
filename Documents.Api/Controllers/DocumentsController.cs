@@ -13,17 +13,28 @@ public class DocumentsController(
     private readonly ILogger<DocumentsController> _logger = logger;
     private readonly IDocumentService _documentService = documentService;
 
+    // GET/customer/{CustomerId}/documents
+    [HttpGet]
+    [Route($"{{CustomerId}}/documents")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetAllDocumentForCustomer([FromRoute] GetDocumentRequest request, [FromQuery] string? documentType = null)
+    {
+        throw new NotImplementedException();
+    }
+
     // GET /customer/{CustomerId}/documents/{DocumentId}
     [HttpGet]
     [Route($"{{CustomerId}}/documents/{{DocumentId}}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetDocumentById([FromRoute] GetDocumentRequest request)
+    public async Task<IActionResult> GetDocumentUrlById([FromRoute] GetDocumentRequest request)
     {
         var document = request.ToDomain();
 
-        var result = await _documentService.GetDocumentAsync(document);
+        var result = await _documentService.GetDocumentUrlAsync(document);
 
         if (!result.IsSuccess)
         {

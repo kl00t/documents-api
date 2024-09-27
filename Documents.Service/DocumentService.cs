@@ -31,7 +31,7 @@ public class DocumentService(ILogger<DocumentService> logger, IDocumentStorageCl
         }
     }
 
-    public async Task<Result<Document>> GetDocumentAsync(Document document)
+    public async Task<Result<Document>> GetDocumentUrlAsync(Document document)
     {
         ArgumentNullException.ThrowIfNull(document);
 
