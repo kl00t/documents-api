@@ -3,10 +3,7 @@
 namespace Documents.Api.Dto;
 
 public record StoreDocumentRequest(
-    string CustomerId,
-    string DocumentId,
-    string FileName,
-    string ContentType,
+    string CustomerId, 
     string DocumentType)
 {
     public Document ToDomain()
@@ -14,9 +11,6 @@ public record StoreDocumentRequest(
         return new Document
         {
             CustomerId = CustomerId,
-            DocumentId = DocumentId,
-            FileName = FileName,
-            ContentType = ContentType,
             DocumentType = DocumentType
         };
     }

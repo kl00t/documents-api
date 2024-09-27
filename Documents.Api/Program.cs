@@ -14,7 +14,6 @@ public class Program
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .Enrich.FromLogContext()
-            .WriteTo.Console()
             .CreateLogger();
 
         builder.Host.UseSerilog();

@@ -77,6 +77,8 @@ public class DocumentService(ILogger<DocumentService> logger, IDocumentStorageCl
 
         try
         {
+            document.DocumentId = Guid.NewGuid().ToString();
+
             string key = ConstructKey(document);
 
             var response = await documentStorageClient.PutObject(
