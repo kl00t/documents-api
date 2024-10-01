@@ -2,7 +2,6 @@
 using Documents.Client.Constants;
 using Documents.Service.Models;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 
 namespace Documents.Service;
 

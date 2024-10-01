@@ -2,6 +2,8 @@
 
 public class Document
 {
+    public string? Key { get; set; }
+
     public required string CustomerId { get; set; }
 
     public string? DocumentId { get; set; }

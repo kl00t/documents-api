@@ -1,16 +1,11 @@
-﻿using Amazon.Runtime.Documents;
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Documents.Client.Constants;
 using Documents.Client.Settings;
 using Documents.Core.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.IO;
 using System.Net;
-using System.Net.Mime;
-using static System.Net.Mime.MediaTypeNames;
-using System.Xml.Linq;
 
 namespace Documents.Client;
 

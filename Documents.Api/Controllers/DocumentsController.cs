@@ -32,7 +32,9 @@ public class DocumentsController(
             return Problem(statusCode: StatusCodes.Status404NotFound, detail: $"Documents for customer not found {request.CustomerId}.");
         }
 
-        return Ok(result.Data);
+        var response = DocumentResponse.FromDomain(result.Data!);
+
+        return Ok(response);
     }
 
     // GET /customer/{CustomerId}/documents/{DocumentId}
@@ -53,7 +55,9 @@ public class DocumentsController(
             return Problem(statusCode: StatusCodes.Status404NotFound, detail: $"Documents {request.DocumentId} not found {request.CustomerId}.");
         }
 
-        return Ok(result.Data);
+        var response = GetDocumentResponse.FromDomain(result.Data!);
+
+        return Ok(response);
     }
 
     // POST /customer
