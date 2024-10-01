@@ -32,7 +32,7 @@ public class CustomExceptionFilter : IExceptionFilter
         if (context.Exception is S3ClientException)
         {
             problemDetails.Status = StatusCodes.Status500InternalServerError;
-            problemDetails.Title = "S3 Client Error";
+            problemDetails.Title = "Client Error";
         }
         else if (context.Exception is ServiceException)
         {
