@@ -1,5 +1,4 @@
 ﻿using Amazon;
-using Amazon.Runtime;
 using Amazon.S3;
 using Documents.Client.Settings;
 using Microsoft.Extensions.Configuration;
@@ -14,8 +13,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IDocumentStorageClient, DocumentStorageClient>();
 
-        services.Configure<S3Settings>(options =>
-            configuration.GetSection("S3Settings").Bind(options));
+        services.Configure<S3Settings>(options => configuration.GetSection("S3Settings").Bind(options));
 
         services.AddSingleton<IAmazonS3>(sp =>
         {
@@ -25,9 +23,7 @@ public static class ServiceCollectionExtensions
                 RegionEndpoint = RegionEndpoint.GetBySystemName(s3Settings.Region)
             };
 
-            return new AmazonS3Client(
-                new BasicAWSCredentials(s3Settings.AccessKey, s3Settings.SecretKey),
-                clientConfiguration);
+            return new AmazonS3Client(clientConfiguration);
         });
     }
 }

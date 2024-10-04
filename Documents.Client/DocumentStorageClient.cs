@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using Amazon.Runtime;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Documents.Client.Constants;
 using Documents.Client.Settings;
@@ -167,10 +168,15 @@ public class DocumentStorageClient(ILogger<DocumentStorageClient> logger,
             _logger.LogError(ex, "Amazon S3 error occurred for key: {Key}. Error message: {Message}", key, ex.Message);
             throw new S3ClientException("Amazon S3 error occurred. Error message: {Message}", ex);
         }
+        catch (AmazonServiceException ex)
+        {
+            _logger.LogError(ex, "Amazon service error occurred. Error message: {Message}", ex.Message);
+            throw new S3ClientException("Amazon service error occurred. Error message: {Message}", ex);
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred for key: {Key}. Error message: {Message}", key, ex.Message);
-            throw new S3ClientException("Amazon S3 error occurred. Error message: {Message}", ex);
+            _logger.LogError(ex, "An error occurred. Error message: {Message}", ex.Message);
+            throw new S3ClientException("An error occurred. Error message: {Message}", ex);
         }
     }
 }
