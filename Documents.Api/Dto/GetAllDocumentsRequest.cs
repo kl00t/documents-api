@@ -2,13 +2,14 @@
 
 namespace Documents.Api.Dto;
 
-public record GetAllDocumentsRequest(string CustomerId)
+public record GetAllDocumentsRequest(string CustomerId, string OrderCode)
 {
     public Document ToDomain()
     {
         return new Document
         {
-            CustomerId = CustomerId
+            CustomerId = CustomerId,
+            OrderCode = OrderCode
         };
     }
 }

@@ -6,6 +6,8 @@ public class Document
 
     public required string CustomerId { get; set; }
 
+    public string? OrderCode { get; set; }
+
     public string? DocumentId { get; set; }
 
     public string? FileName { get; set; }

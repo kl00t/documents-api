@@ -13,9 +13,9 @@ public class DocumentsController(
     private readonly ILogger<DocumentsController> _logger = logger;
     private readonly IDocumentService _documentService = documentService;
 
-    // GET/customer/{CustomerId}/documents
+    // GET/customer/{CustomerId}/orders/{OrderCode}/documents
     [HttpGet]
-    [Route($"{{CustomerId}}/documents")]
+    [Route($"{{CustomerId}}/orders/{{OrderCode}}/documents")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -28,8 +28,8 @@ public class DocumentsController(
 
         if (!result.IsSuccess)
         {
-            _logger.LogWarning("Documents for customer {customerId} not found.", request.CustomerId);
-            return Problem(statusCode: StatusCodes.Status404NotFound, detail: $"Documents for customer not found {request.CustomerId}.");
+            _logger.LogWarning("Documents for customer {customerId} and order {orderCode} not found.", request.CustomerId, request.OrderCode);
+            return Problem(statusCode: StatusCodes.Status404NotFound, detail: $"Documents for customer '{request.CustomerId}' and order '{request.OrderCode}' not found.");
         }
 
         var response = DocumentResponse.FromDomain(result.Data!);
@@ -37,9 +37,9 @@ public class DocumentsController(
         return Ok(response);
     }
 
-    // GET /customer/{CustomerId}/documents/{DocumentId}
+    // GET /customer/{CustomerId}/orders/{OrderCode}/documents/{DocumentId}
     [HttpGet]
-    [Route($"{{CustomerId}}/documents/{{DocumentId}}")]
+    [Route($"{{CustomerId}}/orders/{{OrderCode}}/documents/{{DocumentId}}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -78,19 +78,19 @@ public class DocumentsController(
         var result = await _documentService.StoreDocumentAsync(stream, document);
         if (!result.IsSuccess)
         {
-            _logger.LogError("Failed to store document for customer {CustomerId}", request.CustomerId);
-            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Failed to store document for customer {request.CustomerId}.");
+            _logger.LogError("Failed to store document for customer '{CustomerId}' and OrderCode {OrderCode}", request.CustomerId, request.OrderCode);
+            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Failed to store document for customer '{request.CustomerId}' and '{request.OrderCode}'.");
         }
 
         return CreatedAtAction(
             nameof(GetDocumentUrlById),
-            new { result.Data!.CustomerId, result.Data!.DocumentId },
+            new { result.Data.CustomerId, result.Data.OrderCode, result.Data.DocumentId },
             value: document);
     }
 
-    // DELETE /customer/{CustomerId}/documents/{DocumentId}
+    // DELETE /customer/{CustomerId}/orders/{OrderCode}/documents/{DocumentId}
     [HttpDelete]
-    [Route($"{{CustomerId}}/documents/{{DocumentId}}")]
+    [Route($"{{CustomerId}}/orders/{{OrderCode}}/documents/{{DocumentId}}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -102,10 +102,10 @@ public class DocumentsController(
 
         if (!result.IsSuccess)
         {
-            _logger.LogError("Failed to delete document {documentId} for customer {customerId}", request.DocumentId, request.CustomerId);
-            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Failed to delete document {request.DocumentId} for customer {request.CustomerId}.");
+            _logger.LogError("Failed to delete document '{documentId}' for customer '{customerId}' and order {orderCode}", request.DocumentId, request.CustomerId, request.OrderCode);
+            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: $"Failed to delete document '{request.DocumentId}' for customer '{request.CustomerId}' and order {request.OrderCode}.");
         }
 
-        return Ok($"Document '{request.DocumentId}' for customer '{request.CustomerId}' deleted.");
+        return Ok($"Document '{request.DocumentId}' for customer '{request.CustomerId}' and order '{request.OrderCode}' deleted.");
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Documents.Client;
 
-public class GetDocumentResult(string fileName, string documentType, string key, string contentType, string customerId)
+public class GetDocumentResult(string fileName, string documentType, string key, string contentType, string customerId, string orderCode)
 {
     public string FileName { get; private set; } = fileName;
 
@@ -11,4 +11,6 @@ public class GetDocumentResult(string fileName, string documentType, string key,
     public string ContentType { get; private set; } = contentType;
 
     public string CustomerId { get; private set; } = customerId;
+
+    public string OrderCode { get; private set; } = orderCode;
 }

@@ -11,7 +11,7 @@ public class DocumentService(ILogger<DocumentService> logger, IDocumentStorageCl
     {
         ArgumentNullException.ThrowIfNull(document);
 
-        return $"{document.CustomerId}/{document.DocumentId}";
+        return $"{document.CustomerId}/{document.OrderCode}/{document.DocumentId}";
     }
 
     public async Task<Result<bool>> DeleteDocumentAsync(Document document)
@@ -48,6 +48,7 @@ public class DocumentService(ILogger<DocumentService> logger, IDocumentStorageCl
                              let ddd = new Document
                              {
                                  CustomerId = d.CustomerId,
+                                 OrderCode = d.OrderCode,
                                  DocumentId = d.DocumentId,
                                  FileName = d.FileName,
                                  DocumentType = d.DocumentType,
@@ -89,6 +90,7 @@ public class DocumentService(ILogger<DocumentService> logger, IDocumentStorageCl
             return Result<Document>.Success(new Document
             {
                 CustomerId = document.CustomerId,
+                OrderCode = document.OrderCode,
                 DocumentId = document.DocumentId,
                 FileName = documentStorageClient.GetMetadataValue(response.Data, MetadataConstants.FileName),
                 DocumentType = documentStorageClient.GetMetadataValue(response.Data, MetadataConstants.DocumentType),
@@ -111,7 +113,7 @@ public class DocumentService(ILogger<DocumentService> logger, IDocumentStorageCl
         try
         {
             document.DocumentId = Guid.NewGuid().ToString();
-
+            
             string key = ConstructKey(document);
 
             var response = await documentStorageClient.PutObject(
@@ -130,6 +132,7 @@ public class DocumentService(ILogger<DocumentService> logger, IDocumentStorageCl
             return Result<Document>.Success(new Document
             {
                 CustomerId = document.CustomerId,
+                OrderCode = document.OrderCode,
                 DocumentId = document.DocumentId,
                 FileName = document.FileName,
                 DocumentType = document.DocumentType,

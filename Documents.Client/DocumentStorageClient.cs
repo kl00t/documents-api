@@ -124,6 +124,7 @@ public class DocumentStorageClient(ILogger<DocumentStorageClient> logger,
                     getDocumentResults.Add(
                         new GetDocumentResult(
                             customerId: prefix,
+                            orderCode: "",
                             fileName: GetMetadataValue(metadataCollection.Data, MetadataConstants.FileName),
                             documentType: GetMetadataValue(metadataCollection.Data, MetadataConstants.DocumentType),
                             contentType: GetMetadataValue(metadataCollection.Data, MetadataConstants.ContentType),

@@ -3,14 +3,14 @@
 public class Result<T>
 {
     public bool IsSuccess { get; }
-    public T? Data { get; }
+    public T Data { get; }
     public string? ErrorMessage { get; }
 
     // Private constructor to ensure Result is created via Success or Failure static methods.
-    private Result(bool isSuccess, T? data, string? errorMessage)
+    private Result(bool isSuccess, T data, string? errorMessage)
     {
         IsSuccess = isSuccess;
-        Data = data;
+        Data = data!;
         ErrorMessage = errorMessage;
     }
 
@@ -23,7 +23,7 @@ public class Result<T>
     // Factory method for failure result
     public static Result<T> Failure(string errorMessage)
     {
-        return new Result<T>(false, default, errorMessage);
+        return new Result<T>(false, default!, errorMessage);
     }
 
     // Implicit operator to check success state directly
