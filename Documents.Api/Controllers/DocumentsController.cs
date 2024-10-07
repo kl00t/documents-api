@@ -8,10 +8,12 @@ namespace Documents.Api.Controllers;
 [Route("customers")]
 public class DocumentsController(
     ILogger<DocumentsController> logger,
-    IDocumentService documentService) : ControllerBase
+    ICommandDocumentService commandDocumentService,
+    IQueryDocumentService queryDocumentService) : ControllerBase
 {
     private readonly ILogger<DocumentsController> _logger = logger;
-    private readonly IDocumentService _documentService = documentService;
+    private readonly ICommandDocumentService _command  = commandDocumentService;
+    private readonly IQueryDocumentService _query = queryDocumentService;
 
     // GET/customer/{CustomerId}/orders/{OrderCode}/documents
     [HttpGet]
@@ -24,7 +26,7 @@ public class DocumentsController(
         var document = request.ToDomain();
         document.DocumentType = documentType;
 
-        var result = await _documentService.GetAllDocumentsAsync(document);
+        var result = await _query.GetAllDocumentsAsync(document);
 
         if (!result.IsSuccess)
         {
@@ -47,7 +49,7 @@ public class DocumentsController(
     {
         var document = request.ToDomain();
 
-        var result = await _documentService.GetDocumentUrlAsync(document);
+        var result = await _query.GetDocumentUrlAsync(document);
 
         if (!result.IsSuccess)
         {
@@ -75,7 +77,7 @@ public class DocumentsController(
         document.FileName = file.FileName;
         document.ContentType = file.ContentType;
 
-        var result = await _documentService.StoreDocumentAsync(stream, document);
+        var result = await _command.StoreDocumentAsync(stream, document);
         if (!result.IsSuccess)
         {
             _logger.LogError("Failed to store document for customer '{CustomerId}' and OrderCode {OrderCode}", request.CustomerId, request.OrderCode);
@@ -98,7 +100,7 @@ public class DocumentsController(
     {
         var document = request.ToDomain();
 
-        var result = await _documentService.DeleteDocumentAsync(document);
+        var result = await _command.DeleteDocumentAsync(document);
 
         if (!result.IsSuccess)
         {

@@ -2,10 +2,8 @@
 
 namespace Documents.Service;
 
-public interface IDocumentService
+public interface IQueryDocumentService
 {
-    Task<Result<Document>> StoreDocumentAsync(Stream fileStream, Models.Document document);
     Task<Result<Document>> GetDocumentUrlAsync(Document document);
-    Task<Result<bool>> DeleteDocumentAsync(Document document);
     Task<Result<List<Document>>> GetAllDocumentsAsync(Document document);
 }

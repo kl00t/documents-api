@@ -6,6 +6,7 @@ public static class ServiceCollectionExtensions
 {
     public static void AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IDocumentService, DocumentService>();
+        services.AddScoped<ICommandDocumentService, CommandDocumentService>();
+        services.AddScoped<IQueryDocumentService, QueryDocumentService>();
     }
 }
