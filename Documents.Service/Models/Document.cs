@@ -6,7 +6,7 @@ public class Document
 
     public required string CustomerId { get; set; }
 
-    public string? OrderCode { get; set; }
+    public required string OrderCode { get; set; }
 
     public string? DocumentId { get; set; }
 

@@ -28,6 +28,7 @@ public class Program
         builder.Services.AddCors();
         builder.Services.AddServices();
         builder.Services.AddS3Client(builder.Configuration);
+        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
 
         var app = builder.Build();
 

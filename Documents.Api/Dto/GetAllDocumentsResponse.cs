@@ -2,14 +2,14 @@
 
 namespace Documents.Api.Dto;
 
-public record DocumentResponse(
+public record GetAllDocumentsResponse(
     string CustomerId,
     string DocumentId,
     MetaData MetaData)
 {
-    public static DocumentResponse FromDomain(Document document)
+    public static GetAllDocumentsResponse FromDomain(Document document)
     {
-        return new DocumentResponse(
+        return new GetAllDocumentsResponse(
             document.CustomerId ?? string.Empty,
             document.DocumentId ?? string.Empty,
             new MetaData(
@@ -18,13 +18,11 @@ public record DocumentResponse(
                 document.DocumentType ?? string.Empty));
     }
 
-    public static IEnumerable<DocumentResponse> FromDomain(IEnumerable<Document> documents)
+    public static IEnumerable<GetAllDocumentsResponse> FromDomain(IEnumerable<Document> documents)
     {
         return (from document in documents
                     select FromDomain(document)).ToList();
     }
 }
 
-public record MetaData(string FileName, string contentType, string DocumentType)
-{
-}
+public record MetaData(string FileName, string contentType, string DocumentType);

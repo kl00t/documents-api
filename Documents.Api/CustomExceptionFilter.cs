@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Documents.Core.Exceptions;
-using Documents.Service.Exceptions;
 
 namespace Documents.Api;
 

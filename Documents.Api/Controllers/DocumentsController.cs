@@ -1,5 +1,7 @@
-﻿using Documents.Api.Dto;
+﻿using Documents.Api.Documents.Queries.GetDocumentUrlById;
+using Documents.Api.Dto;
 using Documents.Service;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Documents.Api.Controllers;
@@ -8,12 +10,11 @@ namespace Documents.Api.Controllers;
 [Route("customers")]
 public class DocumentsController(
     ILogger<DocumentsController> logger,
-    ICommandDocumentService commandDocumentService,
-    IQueryDocumentService queryDocumentService) : ControllerBase
+    IQueryDocumentService query,
+    ICommandDocumentService command,
+    IMediator mediator) : ControllerBase
 {
     private readonly ILogger<DocumentsController> _logger = logger;
-    private readonly ICommandDocumentService _command  = commandDocumentService;
-    private readonly IQueryDocumentService _query = queryDocumentService;
 
     // GET/customer/{CustomerId}/orders/{OrderCode}/documents
     [HttpGet]
@@ -26,7 +27,10 @@ public class DocumentsController(
         var document = request.ToDomain();
         document.DocumentType = documentType;
 
-        var result = await _query.GetAllDocumentsAsync(document);
+        var result = await query.GetAllDocumentsAsync(
+            customerId: document.CustomerId, 
+            orderCode: document.OrderCode, 
+            documentType: document.DocumentType);
 
         if (!result.IsSuccess)
         {
@@ -34,7 +38,7 @@ public class DocumentsController(
             return Problem(statusCode: StatusCodes.Status404NotFound, detail: $"Documents for customer '{request.CustomerId}' and order '{request.OrderCode}' not found.");
         }
 
-        var response = DocumentResponse.FromDomain(result.Data!);
+        var response = GetAllDocumentsResponse.FromDomain(result.Data!);
 
         return Ok(response);
     }
@@ -47,17 +51,18 @@ public class DocumentsController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetDocumentUrlById([FromRoute] GetDocumentRequest request)
     {
-        var document = request.ToDomain();
+        var response = await mediator.Send(new GetDocumentUrlByIdQuery
+        {
+            CustomerId = request.CustomerId,
+            OrderCode = request.OrderCode,
+            DocumentId = request.DocumentId
+        });
 
-        var result = await _query.GetDocumentUrlAsync(document);
-
-        if (!result.IsSuccess)
+        if (!response.IsSuccess)
         {
             _logger.LogWarning("Document {documentId} for customer {customerId} not found.", request.DocumentId, request.CustomerId);
             return Problem(statusCode: StatusCodes.Status404NotFound, detail: $"Documents {request.DocumentId} not found {request.CustomerId}.");
         }
-
-        var response = GetDocumentResponse.FromDomain(result.Data!);
 
         return Ok(response);
     }
@@ -77,7 +82,7 @@ public class DocumentsController(
         document.FileName = file.FileName;
         document.ContentType = file.ContentType;
 
-        var result = await _command.StoreDocumentAsync(stream, document);
+        var result = await command.StoreDocumentAsync(stream, document);
         if (!result.IsSuccess)
         {
             _logger.LogError("Failed to store document for customer '{CustomerId}' and OrderCode {OrderCode}", request.CustomerId, request.OrderCode);
@@ -100,7 +105,7 @@ public class DocumentsController(
     {
         var document = request.ToDomain();
 
-        var result = await _command.DeleteDocumentAsync(document);
+        var result = await command.DeleteDocumentAsync(document);
 
         if (!result.IsSuccess)
         {

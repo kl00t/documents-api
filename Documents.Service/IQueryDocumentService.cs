@@ -4,6 +4,7 @@ namespace Documents.Service;
 
 public interface IQueryDocumentService
 {
-    Task<Result<Document>> GetDocumentUrlAsync(Document document);
-    Task<Result<List<Document>>> GetAllDocumentsAsync(Document document);
+    Task<Result<Document>> GetDocumentUrlAsync(string customerId, string orderCode, string documentId);
+
+    Task<Result<List<Document>>> GetAllDocumentsAsync(string customerId, string orderCode, string? documentType);
 }

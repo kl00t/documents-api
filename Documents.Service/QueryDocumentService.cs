@@ -7,39 +7,39 @@ namespace Documents.Service;
 
 public class QueryDocumentService(ILogger<QueryDocumentService> logger, IDocumentStorageClient documentStorageClient) : IQueryDocumentService
 {
-    private static string ConstructKey(Document document)
+    private static string ConstructKey(string customerId, string orderCode, string documentId)
     {
-        ArgumentNullException.ThrowIfNull(document);
-        return $"{document.CustomerId}/{document.OrderCode}/{document.DocumentId}";
+        ArgumentNullException.ThrowIfNull(customerId);
+        ArgumentNullException.ThrowIfNull(orderCode);
+        ArgumentNullException.ThrowIfNull(documentId);
+        return $"{customerId}/{orderCode}/{documentId}";
     }
 
-    public async Task<Result<Document>> GetDocumentUrlAsync(Document document)
+    public async Task<Result<Document>> GetDocumentUrlAsync(string customerId, string orderCode, string documentId)
     {
-        ArgumentNullException.ThrowIfNull(document);
-
         try
         {
-            string key = ConstructKey(document);
+            string key = ConstructKey(customerId, orderCode, documentId);
             var response = await documentStorageClient.GetObjectMetaData(key);
 
             if (!response.IsSuccess)
             {
-                logger.LogError("Failed to get object metadata {DocumentId} for customer {CustomerId}.", document.DocumentId, document.CustomerId);
-                return Result<Document>.Failure($"Failed to generate pre-signed URL document {document.DocumentId} for customer {document.CustomerId}.");
+                logger.LogError("Failed to get object metadata {DocumentId} for customer {CustomerId}.", documentId, customerId);
+                return Result<Document>.Failure($"Failed to generate pre-signed URL document {documentId} for customer {customerId}.");
             }
 
             var preSignedUrlresponse = await documentStorageClient.GetPreSignedUrlAsync(key);
             if (!preSignedUrlresponse.IsSuccess)
             {
-                logger.LogError("Failed to generate pre-signed URL for document {DocumentId} for customer {CustomerId}.", document.DocumentId, document.CustomerId);
-                return Result<Document>.Failure($"Failed to generate pre-signed URL document {document.DocumentId} for customer {document.CustomerId}.");
+                logger.LogError("Failed to generate pre-signed URL for document {DocumentId} for customer {CustomerId}.", documentId, customerId);
+                return Result<Document>.Failure($"Failed to generate pre-signed URL document {documentId} for customer {customerId}.");
             }
 
             return Result<Document>.Success(new Document
             {
-                CustomerId = document.CustomerId,
-                OrderCode = document.OrderCode,
-                DocumentId = document.DocumentId,
+                CustomerId = customerId,
+                OrderCode = orderCode,
+                DocumentId = documentId,
                 FileName = documentStorageClient.GetMetadataValue(response.Data, MetadataConstants.FileName),
                 DocumentType = documentStorageClient.GetMetadataValue(response.Data, MetadataConstants.DocumentType),
                 ContentType = documentStorageClient.GetMetadataValue(response.Data, MetadataConstants.ContentType),
@@ -48,22 +48,20 @@ public class QueryDocumentService(ILogger<QueryDocumentService> logger, IDocumen
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to get document {DocumentId} for customer {CustomerId}.", document.DocumentId, document.CustomerId);
-            return Result<Document>.Failure($"Failed to get document {document.DocumentId} for customer {document.CustomerId}.");
+            logger.LogError(ex, "Failed to get document {DocumentId} for customer {CustomerId}.", documentId, customerId);
+            return Result<Document>.Failure($"Failed to get document {documentId} for customer {customerId}.");
         }
     }
 
-    public async Task<Result<List<Document>>> GetAllDocumentsAsync(Document document)
+    public async Task<Result<List<Document>>> GetAllDocumentsAsync(string customerId, string orderCode, string documentType)
     {
-        ArgumentNullException.ThrowIfNull(document);
-
         try
         {
-            var response = await documentStorageClient.GetObjectsAsync(document.CustomerId, document.DocumentType);
+            var response = await documentStorageClient.GetObjectsAsync(customerId, documentType);
             if (!response.IsSuccess)
             {
-                logger.LogError("Failed to get objects for customer {CustomerId}.", document.CustomerId);
-                return Result<List<Document>>.Failure($"Failed to get objects for customer {document.CustomerId}.");
+                logger.LogError("Failed to get objects for customer {CustomerId}.", customerId);
+                return Result<List<Document>>.Failure($"Failed to get objects for customer {customerId}.");
             }
 
             var documents = (from d in response.Data
@@ -82,8 +80,8 @@ public class QueryDocumentService(ILogger<QueryDocumentService> logger, IDocumen
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to get documents for customer {CustomerId}.", document.CustomerId);
-            return Result<List<Document>>.Failure($"Failed to get documents for customer {document.CustomerId}.");
+            logger.LogError(ex, "Failed to get documents for customer {CustomerId}.", customerId);
+            return Result<List<Document>>.Failure($"Failed to get documents for customer {customerId}.");
         }
     }
 }
